@@ -1,0 +1,57 @@
+# -------------------------
+# Environment variables (real secrets only)
+# -------------------------
+.env
+**/.env
+
+# -------------------------
+# Docker / Compose
+# -------------------------
+docker-compose.yaml
+docker-compose.yml
+docker-compose.override.yml
+
+# -------------------------
+# Temporary files (air, hot reload, etc)
+# -------------------------
+tmp/
+**/tmp/
+
+# -------------------------
+# Go build artifacts
+# -------------------------
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# -------------------------
+# Go workspace / tooling
+# -------------------------
+go.work
+go.work.sum
+
+# -------------------------
+# IDEs / Editors
+# -------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -------------------------
+# OS files
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
+logs/

@@ -1,0 +1,139 @@
+version: "3.9"
+
+networks:
+  marketplace_net:
+    driver: bridge
+
+services:
+  # -----------------------
+  # API Gateway (Kong)
+  # -----------------------
+  kong:
+    image: kong:3.6
+    container_name: kong
+    networks:
+      - marketplace_net
+    ports:
+      - "8100:8000"   # Public Gateway
+      - "8109:8001"   # Admin (dev only)
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+    volumes:
+      - ./deploy/kong/kong.yml:/kong/kong.yml:ro
+
+  # -----------------------
+  # Frontend (Go)
+  # -----------------------
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - marketplace_net
+    environment:
+      HTTP_PORT: 8080
+      API_BASE_URL: http://kong:8000
+    ports:
+      - "8101:8080"
+
+  # -----------------------
+  # Auth Service
+  # -----------------------
+  auth:
+    build: ./auth
+    container_name: auth
+    networks:
+      - marketplace_net
+    depends_on:
+      - postgres
+    environment:
+      HTTP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: auth
+      DB_USER: auth
+      DB_PASSWORD: auth
+    ports:
+      - "8102:8080"
+
+  # -----------------------
+  # Courses Service
+  # -----------------------
+  courses:
+    build: ./courses
+    container_name: courses
+    networks:
+      - marketplace_net
+    depends_on:
+      - postgres
+    environment:
+      HTTP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: courses
+      DB_USER: courses
+      DB_PASSWORD: courses
+    ports:
+      - "8103:8080"
+
+  # -----------------------
+  # Order Service
+  # -----------------------
+  order:
+    build: ./order
+    container_name: order
+    networks:
+      - marketplace_net
+    depends_on:
+      - postgres
+    environment:
+      HTTP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: order
+      DB_USER: order
+      DB_PASSWORD: order
+    ports:
+      - "8104:8080"
+
+  # -----------------------
+  # Payment Service
+  # -----------------------
+  payment:
+    build: ./payment
+    container_name: payment
+    networks:
+      - marketplace_net
+    depends_on:
+      - postgres
+    environment:
+      HTTP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: payment
+      DB_USER: payment
+      DB_PASSWORD: payment
+    ports:
+      - "8105:8080"
+
+  # -----------------------
+  # PostgreSQL (DEV ONLY)
+  # -----------------------
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    networks:
+      - marketplace_net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  postgres_data:

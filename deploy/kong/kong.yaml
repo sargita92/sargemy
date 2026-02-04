@@ -1,0 +1,38 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: frontend
+    url: http://frontend:8080
+    routes:
+      - name: frontend-root
+        paths:
+          - /
+
+  - name: auth
+    url: http://auth:8080
+    routes:
+      - name: auth-routes
+        paths:
+          - /auth
+
+  - name: courses
+    url: http://courses:8080
+    routes:
+      - name: courses-routes
+        paths:
+          - /courses
+
+  - name: order
+    url: http://order:8080
+    routes:
+      - name: order-routes
+        paths:
+          - /orders
+
+  - name: payment
+    url: http://payment:8080
+    routes:
+      - name: payment-routes
+        paths:
+          - /payments
