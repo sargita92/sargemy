@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("db connection error: %v", err)
 	}
-	defer db.Close(ctx)
+	defer db.Close()
 
 	mux := http.NewServeMux()
 	httpiface.RegisterHealth(mux)
